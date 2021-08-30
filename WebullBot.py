@@ -3,12 +3,12 @@ import json
 from webull import paper_webull
 import time
 import numpy
-import schedule
+import schedule as sc
 import datetime
+from datetime import date as dt
+from datetime import timedelta as td
 import pandas as pd
 import yfinance as yf
-sc = schedule
-
 
 
 tradeType = input("Welcome! Enter p for paper-trading or c for cash-trading")
@@ -91,20 +91,22 @@ def startDayTrade(tick):
         sc.run_pending()
         time.sleep(1)
 
-def Volitility(tick):
-    appl = yf.Ticker("APPL")
-    todaysDate = datetime.date
-    hist = appl.history(period = 'max')
+def volatility(tick):
+    dateToday = dt.today()
+    lastMonth = dateToday + datetime.timedelta( days = -30)
+    data = yf.download(tick, start=lastMonth, end=dateToday)['Adj Close']
+    vix = round(numpy.std(data), 2)
+    print(vix)
 
 
 
 
-
-startDayTrade("AAPL")
+tick = input("input ticker")
+startDayTrade(tick)
 #sc.every(1).minutes.do(print,lastMinDict)
 #wb.login("samueldavidulysses@gmail.com","Samandgar22")
 
-print(wb.get_account())
+#print(wb.get_account())
 #wb.get_account_id()
 #wb.get_trade_token('218754')
 
