@@ -6,6 +6,8 @@ import numpy
 import schedule
 import datetime
 from datetime import date as dt
+import requests
+import bs4 as bs
 from datetime import timedelta as td
 import pandas as pd
 import yfinance as yf
@@ -77,15 +79,18 @@ lastMinDict = {60: None, 50: None, 40: None, 30: None, 20: None, 10: None, 0: No
 x = None
 def priceUpdate(cost, tick):
     global lastMinDict
-    cost = wb.get_quote(tick)
-    cost = float(cost['pPrice'])
+    stock = yf.Ticker(tick)
+    price = stock.info['regularMarketPrice']
+    cost = price
     for secs in range(60, 0, -10):
         lastMinDict[secs] = lastMinDict[secs-10]
     lastMinDict[0] = cost
 def startDayTrade(tick):
     global lastMinDict
     global x
-    lastMinDict[0] = float(wb.get_quote(tick)['pPrice'])
+    stock = yf.Ticker(tick)
+    price = stock.info['regularMarketPrice']
+    lastMinDict[0] = price
     sc.every(1).minutes.do(print, lastMinDict)
     sc.every(10).seconds.do(priceUpdate,x,tick)
     while 1:
@@ -95,16 +100,37 @@ def startDayTrade(tick):
 def volatility(tick):
     dateToday = dt.today()
     lastMonth = dateToday + datetime.timedelta( days = -30)
-    data = yf.download(tick, start=lastMonth, end=dateToday)['Adj Close']
-    vix = round(numpy.std(data), 2)
+    dataA = yf.download(tick, start = lastMonth, end = dateToday)['Adj Close']
+    vix = (round(numpy.std(dataA), 2))
+    print(tick)
     print(vix)
 
 
+def currPrice(tick):
+    stock = yf.Ticker(tick)
+    price = stock.info['regularMarketPrice']
+    print(price)
+
+#def marketVolatility():
 
 
+#market = yf.Ticker('spy')
+#spy = market.info['regularMarketPrice']
+#print(spy)
 
-startDayTrade('AAPL')
-sc.every(1).minutes.do(print,lastMinDict)
+
+#marketVolatility()
+#stock1 = input("stock 1:")
+#stock2 = input("stock 2:")
+#stock3 = input("stock 3:")
+#tradeCont = [stock1, stock2, stock3]
+
+
+#volatility('aapl')
+#currPrice('aapl')
+#startDayTrade('aapl')
+#sc.every(1).minutes.do(print,lastMinDict)
+
 #wb.login("samueldavidulysses@gmail.com","Samandgar22")
 
 #print(wb.get_account())
