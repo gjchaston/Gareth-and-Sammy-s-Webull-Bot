@@ -11,7 +11,7 @@ import bs4 as bs
 from datetime import timedelta as td
 import pandas as pd
 import yfinance as yf
-import reponse
+import responses
 sc = schedule
 
 
@@ -78,7 +78,7 @@ while z != 0:
 
 lastMinDict = {60: None, 50: None, 40: None, 30: None, 20: None, 10: None, 0: None}
 x = None
-def priceUpdate(cost, tick):
+def priceUpdate(cost, tick): # updates x with the price and uupdates the last 60 stock prices
     global lastMinDict
     stock = yf.Ticker(tick)
     price = stock.info['regularMarketPrice']
@@ -98,20 +98,29 @@ def startDayTrade(tick):
         sc.run_pending()
         time.sleep(1)
 
-def volatility(tick):
+def volatility(tick): # returns the 
     dateToday = dt.today()
     lastMonth = dateToday + datetime.timedelta( days = -30)
     dataA = yf.download(tick, start = lastMonth, end = dateToday)['Adj Close']
     vix = (round(numpy.std(dataA), 2))
-    print(tick)
-    print(vix)
+    return vix
 
 
 def currPrice(tick):
     stock = yf.Ticker(tick)
     price = stock.info['regularMarketPrice']
-    print(price)
+    return price
 
+def compileWatchlist(): # returns a list filled with the symbols in watchlist.txt
+    watchlist = []
+    file = open("watchlist.txt", "r")
+    for line in file:
+        if line.find("\n") != -1:
+            line = line[0: line.find('\n')]
+        watchlist.append(line)
+    return watchlist
+
+print(compileWatchlist())
 #def marketVolatility():
 
 
