@@ -11,6 +11,7 @@ import bs4 as bs
 from datetime import timedelta as td
 import pandas as pd
 import yfinance as yf
+import reponse
 sc = schedule
 
 
